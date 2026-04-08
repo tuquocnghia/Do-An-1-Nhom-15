@@ -3,6 +3,16 @@ from gaussian import gaussian_eliminate
 def rank_and_basis(A):
     """
     [HẠNG VÀ CƠ SỞ] Tính hạng và trích xuất cơ sở Không gian Cột, Dòng, Nghiệm.
+
+    Args:
+        A (list of lists): Ma trận cần phân tích.
+
+    Returns:
+        dict: Từ điển chứa các khóa sau:
+            - 'rank' (int): Hạng của ma trận.
+            - 'column_space_basis' (list of lists): Cơ sở của không gian cột (danh sách các vector cột pivot).
+            - 'row_space_basis' (list of lists): Cơ sở của không gian dòng (danh sách các hàng không zero trong RREF).
+            - 'null_space_basis' (list of lists): Cơ sở của không gian nghiệm (danh sách các vector nghiệm cơ bản).
     """
     m = len(A)
     n = len(A[0])
