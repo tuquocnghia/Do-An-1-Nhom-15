@@ -1,1 +1,3 @@
-numpy==2.02
+numpy>=2.02
+ipykernel>=6.29.5
+jupyter>=1.1.1

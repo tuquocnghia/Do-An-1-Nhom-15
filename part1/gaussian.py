@@ -4,11 +4,11 @@ def gaussian_eliminate(A, b):
     """
     Đưa ma trận [A|b] về RREF bằng Gauss-Jordan (có Partial Pivoting).
 
-    Input:
+    Args:
         A (list of lists): Ma trận hệ số.
         b (list/list of lists): Vector hệ số tự do hoặc ma trận ghép (VD: ma trận I).
 
-    Output:
+    Returns:
         Trả về tuple (RREF_matrix, x, swap_count, det_multiplier):
         - RREF_matrix: Ma trận RREF.
         - x: Nghiệm hệ phương trình (list) hoặc chuỗi báo lỗi ("Vo nghiem"...).
@@ -91,6 +91,19 @@ def gaussian_eliminate(A, b):
     return (RREF_matrix, x, swap_count, det_multiplier)
 
 def back_substitution(U, c):
+    """
+    Thực hiện phép thế ngược trên ma trận tam giác trên U để giải hệ Ux = c.
+
+    Args:
+        U (list of lists): Ma trận tam giác trên.
+        c (list): Vector hệ số tự do.
+
+    Returns:
+        list: Nghiệm của hệ phương trình.
+
+    Raises:
+        ValueError: Nếu ma trận U không khả nghịch (pivot bằng 0).
+    """
     m = len(c)
     solution = [0.0] * m
     for i in range(m - 1, -1, -1):
@@ -103,6 +116,20 @@ def back_substitution(U, c):
     return solution
 
 def solve_system(RREF_matrix):
+    """
+    Phân tích ma trận RREF để xác định nghiệm của hệ phương trình tuyến tính.
+
+    Args:
+        RREF_matrix (list of lists): Ma trận đã được đưa về dạng RREF (Reduced Row Echelon Form).
+
+    Returns:
+        str: Chuỗi mô tả nghiệm hệ phương trình. Có thể là:
+             - "Ma tran rong" nếu ma trận rỗng.
+             - "Phuong trinh vo nghiem" nếu hệ vô nghiệm.
+             - "He co nghiem duy nhat: (x_1, x_2, ...) = (val1, val2, ...)" nếu có nghiệm duy nhất.
+             - Chuỗi biểu diễn nghiệm tổng quát với biến tự do nếu có vô số nghiệm.
+    """
+    
     if not RREF_matrix or not RREF_matrix[0]:
         return "Ma tran rong"
 
