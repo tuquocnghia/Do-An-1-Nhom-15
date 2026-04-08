@@ -18,11 +18,11 @@
 
 ## Thành viên nhóm và Phân công
 
-* **[Tên SV A] - Sinh viên A:** Xây dựng thuật toán cốt lõi (`gaussian.py`) đưa ma trận về RREF với Partial Pivoting.
-* **[Tên SV B] - Sinh viên B:** Xử lý biện luận nghiệm, giải hệ tam giác và xuất chuỗi công thức nghiệm tổng quát (`gaussian.py`).
-* **[Tên SV C] - Sinh viên C:** Cài đặt các ứng dụng đại số (`determinant.py`, `inverse.py`, `rank_basis.py`).
-* **[24120430] - Trần Thanh Sơn:** Kiểm thử, ghi Docstring, xây dựng hệ thống Test Cases đối chiếu với NumPy, review và sửa code tạo file demo(.ipynb), đóng gói và cấu trúc thư mục đồ án.
-* **[Tên SV E] - Sinh viên E:** Tổng hợp, viết báo cáo LaTeX.
+* **21120449 - Nguyễn Văn Hậu:** Xây dựng thuật toán cốt lõi (`gaussian.py`) đưa ma trận về RREF với Partial Pivoting.
+* **24120389 - Từ Quốc Nghĩa:** Xử lý biện luận nghiệm, giải hệ tam giác và xuất chuỗi công thức nghiệm tổng quát (`gaussian.py`).
+* **24120263 - Đỗ Ngọc Gia Bảo:** Cài đặt các ứng dụng đại số (`determinant.py`, `inverse.py`, `rank_basis.py`).
+* **24120430 - Trần Thanh Sơn:** Kiểm thử, ghi Docstring, xây dựng hệ thống Test Cases đối chiếu với NumPy, review và sửa code tạo file demo(.ipynb), đóng gói và cấu trúc thư mục đồ án.
+* **23120027 - Nguyễn Hải Đăng:** Tổng hợp, viết báo cáo LaTeX.
 
 ---
 
