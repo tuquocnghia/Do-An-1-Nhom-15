@@ -91,96 +91,82 @@ def gaussian_eliminate(A, b):
     return (RREF_matrix, x, swap_count, det_multiplier)
 
 def back_substitution(U, c):
-    """
-    Thực hiện phép thế ngược trên ma trận tam giác trên U để giải hệ Ux = c.
-
-    Args:
-        U (list of lists): Ma trận tam giác trên.
-        c (list): Vector hệ số tự do.
-
-    Returns:
-        list: Nghiệm của hệ phương trình.
-
-    Raises:
-        ValueError: Nếu ma trận U không khả nghịch (pivot bằng 0).
-    """
     m = len(c)
     solution = [0.0] * m
-    for i in range(m - 1, -1, -1):
-        if abs(U[i][i]) < EPSILON:
+    for i in range(m - 1, -1, -1): # Duyệt từ hàng dưới cùng lên
+        if abs(U[i][i]) < EPSILON: # Ứng với mỗi hàng, kiểm tra phần tử thuộc đường chéo chính có = 0 hay không. Nếu = 0 thì kết luận phương trình không có nghiệm duy nhất
             raise ValueError("He phuong trinh khong co nghiem duy nhat!")
-        total = 0
+        total = 0 # Ngược lai nếu khác 0, ta cần tính tổng các hạng tử nằm bên phải vị trí đang xét
         for j in range(i + 1, m):
             total += U[i][j] * solution[j]
-        solution[i] = (c[i] - total) / U[i][i]
-    return solution
+        solution[i] = (c[i] - total) / U[i][i] # chuyển vế để suy ra nghiệm ở cột hiện tại
+    return solution 
+
 
 def solve_system(RREF_matrix):
-    """
-    Phân tích ma trận RREF để xác định nghiệm của hệ phương trình tuyến tính.
-
-    Args:
-        RREF_matrix (list of lists): Ma trận đã được đưa về dạng RREF (Reduced Row Echelon Form).
-
-    Returns:
-        str: Chuỗi mô tả nghiệm hệ phương trình. Có thể là:
-             - "Ma tran rong" nếu ma trận rỗng.
-             - "Phuong trinh vo nghiem" nếu hệ vô nghiệm.
-             - "He co nghiem duy nhat: (x_1, x_2, ...) = (val1, val2, ...)" nếu có nghiệm duy nhất.
-             - Chuỗi biểu diễn nghiệm tổng quát với biến tự do nếu có vô số nghiệm.
-    """
-    
-    if not RREF_matrix or not RREF_matrix[0]:
+    if not RREF_matrix or not RREF_matrix[0]: # Nếu ma trận không tồn tại thì trả về rỗng
         return "Ma tran rong"
-
-    res_str = ""
-    rows = len(RREF_matrix)
-    cols = len(RREF_matrix[0])
+    res_str = "" # Khởi tạo chuỗi kết quả 
+    rows = len(RREF_matrix) # Số dòng ma trận
+    cols = len(RREF_matrix[0]) # Số cột ma trận
     n = cols - 1
 
-    for i in range(rows):
-        isAllZero = all(abs(RREF_matrix[i][j]) < EPSILON for j in range(n))
-        if (isAllZero and abs(RREF_matrix[i][n]) > EPSILON):
+    for i in range(rows): # Duyệt từng hàng
+        isAllZero = all(abs(RREF_matrix[i][j]) < EPSILON for j in range(n)) # Kiểm tra tất cả hệ số của ẩn ở hàng đó có = 0 hết hay không
+        if (isAllZero and abs(RREF_matrix[i][n]) > EPSILON): # Nếu tất cả hệ số của ẩn ở hàng đó = 0 và hệ số tự do khác 0 thì kết luận vô nghiệm
             return "Phuong trinh vo nghiem"
+    
 
-    pivots = {}
-    for i in range(rows):
-        for j in range(n):
-            if abs(RREF_matrix[i][j]) > EPSILON:
+    pivots = {} # Khởi tạo danh sách pivot (phần tử cơ sở)
+    for i in range(rows): # Duyệt hàng
+        for j in range(n): # Duyệt cột
+            if abs(RREF_matrix[i][j]) > EPSILON: # Vị trí đầu tiên ở mỗi hàng khác 0 sẽ là pivot
                 pivots[i] = j
-                break
+                break # Tìm sang hàng tiếp theo khi đã tim được pivot cho hàng trước đó
+    
+    if len(pivots) == n: # Tổng số phần tử pivot = tổng số nghiệm thì hệ có nghiệm duy nhất
+        solution = [0.0] * n # Tạo danh sách lưu các ẩn
+        for r, c in pivots.items(): # Duyệt từng pivot, ứng với mỗi pivot thì ẩn của nó = hệ số tự do của chính hàng đó
+            solution[c] = RREF_matrix[r][n] # lưu ẩn
 
-    if len(pivots) == n:
-        solution = [0.0] * n
-        for r, c in pivots.items():
-            solution[c] = RREF_matrix[r][n]
-        var_names = ", ".join([f"x_{i + 1}" for i in range(n)])
+        # Nối chuỗi định dạng (x1, x2, ..., xn) = (...)
+        var_names = ", ".join([f"x_{i+1}" for i in range(n)])
         sol_values = ", ".join([f"{val:.4g}" for val in solution])
-        return f"He co nghiem duy nhat: ({var_names}) = ({sol_values})"
+        
+        res_str = f"({var_names}) = ({sol_values})"
+        return f"He co nghiem duy nhat: {res_str}"
+    
 
-    free_vars = [j for j in range(n) if j not in pivots.values()]
-    free_var_symbols = {val: f"t_{idx + 1}" for idx, val in enumerate(free_vars)}
 
-    for j in range(n):
-        if j not in pivots.values():
-            res_str += f"x_{j + 1} = {free_var_symbols[j]}\n"
+    free_vars = [j for j in range(n) if not j in pivots.values()] # Tìm các cột không chứa pivot, đây chính là các biến tự do
+    free_var_symbols = {value: f"t_{idx + 1}" for idx, value in enumerate(free_vars)} # Đặt tên cho các biến tự do thành các tham số t_1, t_2,... để dễ biểu diễn nghiệm tổng quát
+
+    for j in range(n): # Duyệt qua từng biến x_1, x_2, ... x_n để xuất công thức nghiệm
+        if not j in pivots.values(): # Nếu cột j là biến tự do (không có pivot)
+            res_str += f"x_{j+1} = {free_var_symbols[j]}\n" # Thì gán trực tiếp biến đó bằng tham số tương ứng
         else:
+            # Ngược lại, nếu cột j là biến cơ sở (có chứa pivot)
+            # Tìm dòng đang chứa phần tử pivot của biến x_j hiện tại
             currentRow = [r for r, c in pivots.items() if c == j][0]
-            constant = RREF_matrix[currentRow][n]
-            eq_parts = []
-            if abs(constant) > EPSILON:
-                eq_parts.append(f"{constant:.4g}")
-            for free_var in free_vars:
-                coef = -RREF_matrix[currentRow][free_var]
-                if abs(coef) > EPSILON:
-                    sign = "+ " if coef > 0 else "- "
-                    coef = abs(coef)
-                    part = f"{sign}{free_var_symbols[free_var]}" if abs(coef - 1) < EPSILON else f"{sign}{coef:.4g}{free_var_symbols[free_var]}"
-                    if not eq_parts and sign == "+ ":
-                        part = part.strip("+ ")
-                    eq_parts.append(part.strip())
+            constant = RREF_matrix[currentRow][n] # Lấy hệ số tự do (nằm ở cột cuối cùng bên phải) của dòng đó
+            eq_parts = [] # Khởi tạo mảng lưu các thành phần của vế phải
+            if abs(constant) > EPSILON: # Nếu hệ số tự do khác 0
+                eq_parts.append(f"{constant:.4g}") # Đưa hệ số tự do vào vế phải
+            for free_var in free_vars: # Duyệt qua các biến tự do nằm trên cùng dòng này để chuyển vế
+                coef = RREF_matrix[currentRow][free_var] # Lấy hệ số của biến tự do
+                coef = -coef # Đổi dấu hệ số vì ta đang chuyển vế nó từ trái (chứa ẩn) sang phải (chứa kết quả)
+                if abs(coef) > EPSILON: # Nếu hệ số sau khi chuyển vế khác 0 thì mới đưa vào công thức
+                    sign = "+ " if coef >= EPSILON else "- " # Xác định dấu của hạng tử
+                    coef = abs(coef) # Lấy trị tuyệt đối để dễ in format ghép với dấu ở trên
+                    if abs(coef - 1) < EPSILON: # Nếu hệ số là 1
+                        part = f"{sign} {free_var_symbols[free_var]}" # Tránh in số 1 cho đẹp
+                    else:
+                        part = f"{sign}{coef:.4g}{free_var_symbols[free_var]}" # Còn khác 1 thì in bình thường: dấu + hệ số + tên tham số
+                    if not eq_parts and sign == "+ ": # Nếu đây là phần tử đứng đầu tiên của vế phải và mang dấu dương
+                        part = part.strip("+ ") # Thì xóa dấu cộng đi
+                    eq_parts.append(part.strip()) # Thêm hạng tử đã format gọn gàng vào mảng
             if not eq_parts:
-                eq_parts.append("0")
-            res_str += f"x_{j + 1} = {' '.join(eq_parts)}\n"
+                eq_parts.append("0") # Thì vế phải mặc định là 0
+            res_str += f"x_{j+1} = {' '.join(eq_parts)}\n" # Nối các hạng tử trong mảng bằng dấu cách để tạo thành phương trình hoàn chỉnh cho x_j
 
     return res_str
